@@ -10,32 +10,29 @@ var parseJSON = function (json) {
 	  	return json.slice(1, json.length - 1);
 	  }else if(json[0] === '['){
 	  	//json is an array.
-	  	var jsonStr = json.slice(1, json.length - 1);
-	  	var commaArr = [];
+	  	//var jsonStr = json.slice(1, json.length - 1);
+	  	var newArr = [];
 	  	var levelCount = 0;
-	  	for(var i = 0; i < jsonStr.length; i++){
-	  		if(jsonStr[i] === '['){
+	  	var startSlice = 1;
+	  	for(var i = 0; i < json.length; i++){
+	  		if(i === json.length - 1){
+	  			newArr.push(json.slice(startSlice, i));	  			
+	  		}
+	  		else if(json[i] === '['){
 	  			levelCount ++;
-	  		}else if(jsonStr[i] === ']'){
+	  		}else if(json[i] === ']'){
 	  			levelCount --;
-	  		}else if(jsonStr[i] === ','){
-	  			if(levelCount === 0){
-	  				commaArr.push(i);
+	  		}else if(json[i] === ','){
+	  			if(levelCount === 1){
+	  				newArr.push(json.slice(startSlice, i));
+	  				startSlice = i + 1;
 	  			}
 	  		}
 	  	}
-	  	commaArr.unshift(-1);
-	  	commaArr.push(jsonStr.length);
-	  	var arrArray = [];
-	  	for(var i = 0; i < commaArr.length - 1; i++){
-	  		arrArray.push(jsonStr.slice(commaArr[i]+1, commaArr[i+1]));
+	  	for(var i = 0; i < newArr.length; i++){
+	  		newArr[i] = parseJSON(newArr[i]);
 	  	}
-	  	for(var i = 0; i < arrArray.length; i++){
-	  		arrArray[i] = parseJSON(arrArray[i]);
-	  	}
-	  	return arrArray;
-	  	//var arrArray = json.slice(1, json.length - 1).split(',');
-	  	//return _.map(arrArray, function(item){return parseJSON(item);});
+	  	return newArr;
 	  }else if(json[0] === '{'){
 	  	//json is an object.
 	  	var obj = {};
