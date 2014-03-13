@@ -52,25 +52,23 @@ var safeSplit = function(source, separator){
 	//take JSON object with arrays/objects as source.
 	//Beware: different uses for arrays and objects.
 	var newArr = [];
-	var nested = false;
+	var nested = [];
 	var startSlice = 1;
 	for(var i = 1; i < source.length; i++){
 		if(i === source.length - 1){
 			newArr.push(source.slice(startSlice, i));
-		}else if(source[i] === nested){
-			nested = false;
-		}else if(!nested){
-			//Storing 'passwords' for un-nesting.
-			if(source[i] === '['){
-				nested = ']';
-			}else if(source[i] === '{'){
-				nested = '}';
-			}else if(source[i] === '\"'){
-				nested = '\"';
-			}else if(source[i] === separator){
-				newArr.push(source.slice(startSlice, i));
-				startSlice = i + 1;
-			}
+		}else if(nested.indexOf(source[i]) !== -1){
+			nested.splice(nested.indexOf(source[i]), 1);
+		//Storing 'passwords' for un-nesting.
+		}else if(source[i] === '['){
+			nested.push(']');
+		}else if(source[i] === '{'){
+			nested.push('}');
+		}else if(source[i] === '\"'){
+			nested.push('\"');
+		}else if(source[i] === separator && nested.length === 0){
+			newArr.push(source.slice(startSlice, i));
+			startSlice = i + 1;
 		}
 	}
 	return newArr;
