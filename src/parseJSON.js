@@ -11,7 +11,11 @@ var parseJSON = function (json) {
 
 	  }else if(json[0] === '['){
 	  	//json is an array.
-	  	var newArr = safeSplit(json, ',');
+	  	if(json !== '[]'){
+	  		var newArr = safeSplit(json, ',');
+	  	}else{
+	  		var newArr = [];
+	  	}
 	  	//Utilizes safeSplit function.
 	  	for(var i = 0; i < newArr.length; i++){
 	  		newArr[i] = parseJSON(newArr[i]);
@@ -20,14 +24,19 @@ var parseJSON = function (json) {
 
 	  }else if(json[0] === '{'){
 	  	//json is an object.
-	  	/*var objArray = [];
-	  	var newObj = {};
-	  	//Utilizes safeSplit function.
-	  	safeSplit(json, objArray, ',');
-	  	_.each(objArray, function(obj){
-	  		safeSplit(obj,)
+	  	var objArray = safeSplit(json, ',');
+	  	objArray = _.map(objArray, function(obj){
+	  		//Slight calibration for safeSplit.
+	  		return safeSplit('[' + obj + ']', ':')
 	  	});
-	  	return obj;*/
+	  	var newObj = {};
+	  	if(json !== '{}'){
+	  		_.each(objArray, function(obj){
+	  			newObj[parseJSON(obj[0])] = parseJSON(obj[1]);
+	  		});
+	  	}
+	  	//Utilizes safeSplit function.
+	  	return newObj;
 
 	  }else if(json === 'true' || json === 'false'){
 	  	//json is a boolean.
