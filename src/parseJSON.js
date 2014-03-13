@@ -5,12 +5,23 @@
 var parseJSON = function (json) {
   // your code goes here
   if(json !== undefined){
-	  if(json[0] === '\"'){
+  	if(typeof json !== 'string'){
+  		throw "Error: not a parse-able object";
+
+  	}else if(json[0] === '\"'){
 	  	//json is a string.
+	  	if(json[json.length - 1] !== '\"'){
+	  	  throw "Error: incomplete string";
+	  	}
+
 	  	return json.slice(1, json.length - 1);
 
 	  }else if(json[0] === '['){
 	  	//json is an array.
+	  	if(json[json.length - 1] !== ']'){
+	  		throw "Error: incomplete array";
+	  	}
+
 	  	if(json !== '[]'){
 	  		var newArr = safeSplit(json, ',');
 	  	}else{
@@ -24,6 +35,10 @@ var parseJSON = function (json) {
 
 	  }else if(json[0] === '{'){
 	  	//json is an object.
+	  	if(json[json.length - 1] !== '}'){
+	  		throw "Error: incomplete object";
+	  	}
+
 	  	var objArray = safeSplit(json, ',');
 	  	objArray = _.map(objArray, function(obj){
 	  		//Slight calibration for safeSplit.
@@ -43,6 +58,9 @@ var parseJSON = function (json) {
 	  	return json === 'true' ? true : false;
 	  }else{
 	  	//json is a number.
+	  	if(json !== 'null' && isNaN(Number(json))){
+	  		throw "Error: I don't know what you are referring to";
+	  	}
 	  	return json === 'null' ? null : Number(json);
 	  }
 	}
