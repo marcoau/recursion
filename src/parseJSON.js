@@ -8,44 +8,27 @@ var parseJSON = function (json) {
 	  if(json[0] === '\"'){
 	  	//json is a string.
 	  	return json.slice(1, json.length - 1);
+
 	  }else if(json[0] === '['){
 	  	//json is an array.
-	  	//var jsonStr = json.slice(1, json.length - 1);
-	  	var newArr = [];
-	  	var nested = false;
-	  	var startSlice = 1;
-	  	for(var i = 1; i < json.length; i++){
-	  		if(i === json.length - 1){
-	  			newArr.push(json.slice(startSlice, i));
-	  		}else if(json[i] === nested){
-	  			nested = false;
-	  		}else if(!nested){
-	  			//Storing 'passwords' for un-nesting.
-	  			if(json[i] === '['){
-	  				nested = ']';
-	  			}else if(json[i] === '{'){
-	  				nested = '}';
-	  			}else if(json[i] === '\"'){
-	  				nested = '\"';
-	  			}else if(json[i] === ','){
-	  				newArr.push(json.slice(startSlice, i));
-	  				startSlice = i + 1;
-	  			}
-	  		}
-	  	}
+	  	var newArr = safeSplit(json, ',');
+	  	//Utilizes safeSplit function.
 	  	for(var i = 0; i < newArr.length; i++){
 	  		newArr[i] = parseJSON(newArr[i]);
 	  	}
 	  	return newArr;
+
 	  }else if(json[0] === '{'){
 	  	//json is an object.
-	  	var obj = {};
-	  	var objArray = json.slice(1, json.length - 1).split(',');
-	  	_.each(objArray, function(item){
-	  		var valueKey = item.split(':');
-	  		obj[parseJSON(valueKey[0])] = parseJSON(valueKey[1]);
+	  	/*var objArray = [];
+	  	var newObj = {};
+	  	//Utilizes safeSplit function.
+	  	safeSplit(json, objArray, ',');
+	  	_.each(objArray, function(obj){
+	  		safeSplit(obj,)
 	  	});
-	  	return obj;
+	  	return obj;*/
+
 	  }else if(json === 'true' || json === 'false'){
 	  	//json is a boolean.
 	  	return json === 'true' ? true : false;
@@ -54,4 +37,32 @@ var parseJSON = function (json) {
 	  	return json === 'null' ? null : Number(json);
 	  }
 	}
+};
+
+var safeSplit = function(source, separator){
+	//take JSON object with arrays/objects as source.
+	//Beware: different uses for arrays and objects.
+	var newArr = [];
+	var nested = false;
+	var startSlice = 1;
+	for(var i = 1; i < source.length; i++){
+		if(i === source.length - 1){
+			newArr.push(source.slice(startSlice, i));
+		}else if(source[i] === nested){
+			nested = false;
+		}else if(!nested){
+			//Storing 'passwords' for un-nesting.
+			if(source[i] === '['){
+				nested = ']';
+			}else if(source[i] === '{'){
+				nested = '}';
+			}else if(source[i] === '\"'){
+				nested = '\"';
+			}else if(source[i] === separator){
+				newArr.push(source.slice(startSlice, i));
+				startSlice = i + 1;
+			}
+		}
+	}
+	return newArr;
 };
