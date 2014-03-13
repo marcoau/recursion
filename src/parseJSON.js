@@ -12,18 +12,22 @@ var parseJSON = function (json) {
 	  	//json is an array.
 	  	//var jsonStr = json.slice(1, json.length - 1);
 	  	var newArr = [];
-	  	var levelCount = 0;
+	  	var nested = false;
 	  	var startSlice = 1;
-	  	for(var i = 0; i < json.length; i++){
+	  	for(var i = 1; i < json.length; i++){
 	  		if(i === json.length - 1){
-	  			newArr.push(json.slice(startSlice, i));	  			
-	  		}
-	  		else if(json[i] === '['){
-	  			levelCount ++;
-	  		}else if(json[i] === ']'){
-	  			levelCount --;
-	  		}else if(json[i] === ','){
-	  			if(levelCount === 1){
+	  			newArr.push(json.slice(startSlice, i));
+	  		}else if(json[i] === nested){
+	  			nested = false;
+	  		}else if(!nested){
+	  			//Storing 'passwords' for un-nesting.
+	  			if(json[i] === '['){
+	  				nested = ']';
+	  			}else if(json[i] === '{'){
+	  				nested = '}';
+	  			}else if(json[i] === '\"'){
+	  				nested = '\"';
+	  			}else if(json[i] === ','){
 	  				newArr.push(json.slice(startSlice, i));
 	  				startSlice = i + 1;
 	  			}
