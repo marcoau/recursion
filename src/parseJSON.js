@@ -3,7 +3,9 @@
 
 // but you're not, so you'll write it from scratch:
 var parseJSON = function (json) {
-	console.log(json);
+	
+	var json = json.trim();
+
   // your code goes here
   var escapee = {
       '"':  '"',
